@@ -1,55 +1,193 @@
-# Pipeline ETL: Universidades e Meios de Pagamento
+# 📊 ETL - Dados do IBGE para MongoDB Atlas
 
-Este projeto é um pipeline **ETL (Extract, Transform, Load)** desenvolvido em Python. O objetivo principal é consumir dados de diferentes APIs públicas e carregá-los em diferentes tecnologias de banco de dados (SQLite e MongoDB).
+## 📌 Descrição do Projeto
 
-## 🎯 Funcionalidades
+Este projeto tem como objetivo implementar um pipeline simples de ETL (Extract, Transform, Load) utilizando dados públicos da API do IBGE.  
 
-- **Extração (Extract):**
-  - Dados de universidades ao redor do mundo a partir do país (utilizando a API pública do [HipoLabs](http://universities.hipolabs.com/)).
-  - Dados sobre os meios de pagamento trimestrais no Brasil (utilizando a API de Dados Abertos do **Banco Central do Brasil**).
-- **Carregamento (Load):**
-  - Carga de dados tabulares em banco de dados relacional local usando **SQLite**.
-  - Carga de dados (JSON/documentos) em banco de dados NoSQL na nuvem utilizando **MongoDB Atlas**.
+Os dados são extraídos via requisição HTTP, organizados por indicador e armazenados em um banco de dados MongoDB Atlas, separados em coleções específicas.
 
-## 📂 Estrutura do Projeto
+---
+
+## 🚀 Objetivo
+
+- Extrair dados da API do IBGE
+- Realizar tratamento mínimo dos dados
+- Armazenar no MongoDB Atlas
+- Organizar os dados em coleções separadas por indicador
+- Aplicar boas práticas de organização de código
+
+---
+
+## 📊 Indicadores Utilizados
+
+Os seguintes indicadores foram utilizados no projeto:
+
+| Código | Descrição |
+|--------|----------|
+| 4099 | Taxa de desocupação |
+| 4096 | Taxa de participação na força de trabalho |
+| 12466 | Taxa de informalidade |
+
+---
+
+## 🌐 Fonte de Dados
+
+API oficial do IBGE:
 
 ```
-etl-uni/
-│
-├── main.py               # Script principal que orquestra o fluxo ETL
-├── teste.py              # Script local para testes de requisição da API
-├── .env                  # Variáveis de ambiente com credenciais (não versionado)
-│
-└── src/
-    ├── extract.py        # Módulo contendo as funções de extração (requests)
-    └── load.py           # Módulo contendo as funções de carga de banco de dados
+https://servicodados.ibge.gov.br/api/v3/
 ```
 
-## 🚀 Como Executar
+Endpoint utilizado:
 
-### 1. Pré-requisitos
-- Python 3.10 ou superior
-- O gerenciador de pacotes `pip`
-- Uma conta no MongoDB Atlas com um cluster (ex: `Cluster0`) e permissões configuradas.
+```
+https://servicodados.ibge.gov.br/api/v3/agregados/4093/periodos/-50/variaveis/4096%7C4099%7C12466?localidades=N1[all]|N3[all]&classificacao=2[all]
+```
 
-### 2. Instalação e Configuração
+---
 
-Crie um ambiente virtual (recomendado) e instale as dependências:
+## 🏗️ Estrutura do Projeto
+
+```
+ETL_UNI/
+│
+├── src/
+│   ├── extract.py
+│   ├── load.py
+│
+├── main.py
+├── requirements.txt
+├── .gitignore
+└── .env
+```
+
+---
+
+## ⚙️ Tecnologias Utilizadas
+
+- Python 3
+- Requests
+- PyMongo
+- MongoDB Atlas
+- Python-dotenv
+
+---
+
+## 🔄 Pipeline ETL
+
+### 1. Extract (Extração)
+
+Responsável por consumir a API do IBGE e retornar os dados em formato JSON.
+
+### 2. Transform (Tratamento)
+
+Os dados são organizados por código de variável e preparados para separação em coleções.
+
+### 3. Load (Carregamento)
+
+Os dados são armazenados no MongoDB Atlas, separados por coleção:
+
+- taxa_desocupacao
+- taxa_participacao
+- taxa_informalidade
+
+---
+
+## ☁️ Banco de Dados
+
+**Banco utilizado:**
+
+```
+ibge_database
+```
+
+**Collections:**
+
+- taxa_desocupacao  
+- taxa_participacao  
+- taxa_informalidade  
+
+---
+
+## 🔐 Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+DB_USER=seu_usuario
+DB_PASSWORD=sua_senha
+```
+
+---
+
+## ▶️ Como Executar o Projeto
+
+### 1. Clonar o repositório
+
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # ou .venv\Scripts\activate no Windows
+git clone https://github.com/Rodrigo300511/Mini-Hackathon---Aula-20-05.git
+```
+
+### 2. Acessar a pasta
+
+```bash
+cd Mini-Hackathon---Aula-20-05
+```
+
+### 3. Criar ambiente virtual
+
+```bash
+python -m venv venv
+```
+
+Ativar:
+
+```bash
+venv\Scripts\activate
+```
+
+### 4. Instalar dependências
+
+```bash
 pip install -r requirements.txt
 ```
 
-Crie um arquivo `.env` na raiz do seu projeto e adicione as suas credenciais do MongoDB:
-```env
-DB_USER=seu_usuario_do_mongo
-DB_PASSWORD=sua_senha_do_mongo
-```
+### 5. Executar o projeto
 
-### 3. Rodando o Pipeline
-
-Basta executar o arquivo principal:
 ```bash
 python main.py
 ```
+
+---
+
+## 📌 Exemplo de Execução
+
+```
+STATUS CODE: 200
+
+Processando variável 4099 → taxa_desocupacao
+Sucesso! Dados inseridos no MongoDB
+
+Processando variável 4096 → taxa_participacao
+Sucesso! Dados inseridos no MongoDB
+
+Processando variável 12466 → taxa_informalidade
+Sucesso! Dados inseridos no MongoDB
+```
+
+---
+
+## ✅ Boas Práticas Aplicadas
+
+- Separação em módulos (extract / load)
+- Uso de MongoDB Atlas (cloud)
+- Uso de variáveis de ambiente
+- Estruturação por collections
+- Tratamento básico de erros
+- Código organizado e reutilizável
+
+---
+
+## 👨‍💻 Autor
+
+Projeto desenvolvido para fins acadêmicos na disciplina de Engenharia de Dados.
